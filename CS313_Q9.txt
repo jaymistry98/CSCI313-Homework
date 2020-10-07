@@ -1,0 +1,281 @@
+DeBruijnSequence.h
+
+
+#pragma once
+#include <iostream>
+#include <string>
+#include <unordered_set>
+#include <time.h>
+using namespace std;
+
+
+
+
+void print(char* a, int size) {
+	for (int i = 0; i < size; i++) {
+		cout << a[i] << " ";
+	}
+	cout << endl;
+}
+
+bool isDeBruijnSequence(char* a, int a_size, int substring_size) {
+	// Using a set to keep track of the substring.
+	unordered_set<string> tracker;
+	string substring = "";
+	for (int i = 0; i < a_size; i++) {
+		if (i == 0) {
+			substring = string(a).substr(0, substring_size);
+		}
+		else {
+			// cut off the first character and add one more character to the end of the substring
+			substring = substring.substr(1);
+			// example: substring_size = 3, a_size = 8
+			// when i = 7, a[(i + substring_size - 1)] = a[9], which will be out of bound.
+			// a[(i + substring_size - 1) % a_size] = a[9 % 8] = a[1] will go back the begining of the array.
+			substring += a[(i + substring_size - 1) % a_size];
+		}
+		
+
+		// if the string is already in the set, then the sequence is not De Brujin Sequence
+		// since the substring is not unique.
+		if (tracker.find(substring) == tracker.end()) {
+			tracker.insert(substring);
+		}
+		else {
+ 			return false;
+		}
+	}
+
+	return true;
+}
+
+
+void mutate(char* a, int a_size,int substring_size) {
+	srand(time(0));
+	for (int i = 0; i < a_size; i++) {
+		int num = rand() % 20;
+		// Within the probability 5%,  mutate the char (0 -> 1 or 1 -> 0).
+		if (num < 1) {
+			a[i] = a[i] == '0' ? '1' : '0';
+		}
+	}
+}
+
+void testing_array(char* array, int size, int substring_size) {
+	// generate a random array
+	srand(time(0));
+	for (int i = 0; i < size; i++) {
+		int num = rand() % 100;
+		array[i] = num < 50 ? '0' : '1';
+	}
+
+	//mutate the array until it is a De Brujin Sequence.
+	while (true) {
+		if (!isDeBruijnSequence(array, size, substring_size)) {
+			mutate(array, size, substring_size);
+			print(array, size);
+		}
+		else {
+			cout << "Array: De Bruijn Sequence is " << endl;
+			print(array, size);
+			break;
+		}
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+//The following class and method is for testing if a Linked List is a De Brujin Sequence.
+class Node {
+public:
+	char data;
+	Node* next;
+	
+};
+
+void print_ll(Node* head) {
+	Node* cur = head;
+
+	if (head != NULL) {
+		do {
+			cout << cur->data << " ";
+			cur = cur->next;
+		} while (cur != head);
+	}
+	
+	cout << endl;
+}
+
+
+bool isDeBruijnSequence_ll(Node* head, int substring_size) {
+	unordered_set<string> tracker;
+	string substring;
+	Node* cur = head;
+	
+
+	do {
+		substring = "";
+		Node* ptr = cur;
+		for (int i = 0; i < substring_size; i++) {
+			substring += ptr->data;
+			ptr = ptr->next;
+		}
+
+		// if the string is already in the set, then the sequence is not De Brujin Sequence
+		// since the substring is not unique.
+		if (tracker.find(substring) == tracker.end()) {
+			tracker.insert(substring);
+		}
+		else {
+			return false;
+		}
+
+		cur = cur->next;
+		
+	} while (cur != head);
+
+	return true;
+
+}
+
+void mutate_ll(Node* head, int size, int substring_size) {
+	srand(time(0));
+	Node* cur = head;
+	
+	int counter = 0;
+	while (counter < size) {
+		int num = rand() % 20;
+		// Within the probability 5%, mutate the char (0 -> 1 or 1 -> 0).
+		if (num < 1) {
+			cur->data = (cur->data == '0' ? '1' : '0');
+		}
+		cur = cur->next;
+		counter++;
+		
+	}
+}
+
+void testing_ll(Node* head, int size, int substring_size) {
+	//generate a random circular linked list
+	int counter = 0;
+	Node* cur = head;
+	while (counter < size) {
+		int num = rand() % 2;
+		cur->data = (num == 0 ? '0' : '1');
+
+		// create a new node for next;
+		Node* n = new Node();
+
+		if (counter == size-1) {
+			// make it a circular linked list.
+			cur->next = head;
+			delete n;
+		}
+		else {
+			cur->next = n;
+		}
+
+		cur = cur->next;
+		counter++;
+	}
+
+	//mutate the linked list until it is a De Brujin Sequence
+	while (true) {
+		if (!isDeBruijnSequence_ll(head, substring_size)) {
+			mutate_ll(head, size, substring_size);
+			print_ll(head);
+		}
+		else {
+			cout << "Linked List: De Bruijn Sequence is " << endl;
+			print_ll(head);
+			break;
+		}
+	}
+}
+
+
+
+************************************************************************************************************
+main
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <list>
+#include <utility>
+#include <time.h>
+#include <cmath>
+#include <unordered_set>
+
+using std:: cout;
+using std::vector;
+using std::list;
+using namespace std;
+
+#include "DeBruijnSequence.h"
+
+void Q9_main() {
+	// The demo De BruijnSequence will be B(2, 3).
+	int k = 2;
+	int n = 3;
+	int size = pow(k, n);
+
+	
+	char* array = new char [size];
+	cout << "The array is " << endl;
+	testing_array(array, size, n);
+
+	
+	Node* head = new Node();
+	cout << "The linked list is " << endl;
+	testing_ll(head, size, n);
+
+	// testing for array structure and linked list structure 1 time.
+	auto arraymilliseconds = TimeFunc([&]() {testing_array(array, size, n); });
+	auto linkedlistmilliseconds = TimeFunc([&]() {testing_ll(head, size, n); });
+	cout << "Running one time: arraymilliseconds is " << arraymilliseconds << endl;
+	cout << "Running one time: linkedlistmilliseconds is " << linkedlistmilliseconds << endl;
+
+
+	// testing for array structure and linked list structure 100 time.
+	/*int mutate_time = 99;
+	while (mutate_time > 0) {
+		linkedlistmilliseconds += TimeFunc([&]() {testing_ll(head, size, n); });
+		arraymilliseconds += TimeFunc([&]() {testing_array(array, size, n); });
+		mutate_time--;
+	}
+
+
+	if (arraymilliseconds < linkedlistmilliseconds) {
+		cout << "arraymilliseconds is " << arraymilliseconds << endl;
+		cout << "linkedlistmilliseconds is " << linkedlistmilliseconds << endl;
+		cout << "Array is faster" << endl;
+	}
+	else if (arraymilliseconds > linkedlistmilliseconds) {
+		cout << "arraymilliseconds is " << arraymilliseconds << endl;
+		cout << "linkedlistmilliseconds is " << linkedlistmilliseconds << endl;
+		cout << "Linked list is faster" << endl;
+	}
+	else {
+		cout << "arraymilliseconds is " << arraymilliseconds << endl;
+		cout << "linkedlistmilliseconds is " << linkedlistmilliseconds << endl;
+		cout << "same speed" << endl;
+	}*/
+}
+
+
+int main()
+{
+	
+	Q9_main();
+	
+}

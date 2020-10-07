@@ -1,0 +1,34 @@
+Question 8 White Paper:
+Create a ​templated class​ that ​effectively f​inds all possibilities of a list of random numbers that adds to some s.
+The conditions that were taken from the question were:
+1.use of a templated class
+2.finds all possibilities "effectively"
+3.uses list of random number and arbitrary s
+~use of positive number lists
+
+Implemenation:
+1. the use of a templated class allows for different data types input i.e. inputs of int and double. The posSumPre() and inputs() are templated classes which allows for both data types to work while calling the same function.
+2. a function that recursively finds all possible subsets could be used however if using binary for example, the time complexity would be 2^n. The use of a vector that store subsets allows it to be more effective.
+3.the inputs() takes parameters array of numbers, size of the array and some s
+
+Code:
+
+main()
+1. array, size of array and the desired number are parameters to inputs()
+2.inputs() uses <data type> because it is a templated class, allows for use of <int> and <double>
+
+inputs()
+1. creates two vectors, a vector of type T is used to record a subset, the second is a vector of the first vector, it stores all the subsets
+2. then it calls the function that will go through the number list and find the subsets
+3. checks if the vector is empty if not then prints subsets that add up to some s
+
+posSumPre()
+1. templated class which allows for int and double data type uses
+2. it checks if the subsetSum is equal to the desired sum
+3. for loop goes through each element, adding to subsetSum which keeps track of current
+4. calls itself and repeats to step 2
+5. if it passes the check the subset will be added to vector of vector, recording that combination
+6. return and pop_back takes the elements out that have been used and moves to the element
+
+~ there is rand int generator used to test the "possibilities of a list of random numbers" 
+

@@ -1,0 +1,33 @@
+//9. Create a random array of size k.Create a function to check if it is a deBruijn
+//sequence of B(n, k).If it is not randomly mutate each spot in the array(from a 0 to 1 or 1 to 0)
+//with a 5 % probability, keep doing this until you have found a deBruijn sequence.
+//Do this with an array structureand a linked structure.
+//To this 100 times for each, time itand compare your results.
+//
+//For this question, We aware that a DeBruijn Sequence if order n in a size k is a
+//cyclic sequence in which every possible length - n string occurs exactly once as
+//a substring.We denoted B(k, n).
+//
+//To detect if a sequence is a DeBruijn Sequence, we will use a unordered_set to
+//keep track of the substring.If every substring appears only once, then we
+//successfully find the sequence.Otherwise, return false.
+//
+//To mutate the sequence, we need to make sure that every element in the array /
+//linked list only has 5 % probability to change its value(from 0 -> 1 or 1 -> 0).
+//
+//Besides detecting and mutating, we have another function called testing, which
+//will generate a random array / linked list that filled with '0's and '1's.Then
+//we will test the randomly array / linked list to see if it is a De Bruijn sequence.
+//If not, we keep calling the mutate function until the sequence becomes a De Bruijn
+//sequence.
+//
+//We will use array strustureand linked list strusture for this question.For array,
+//it is straightforward.We will use the default substr method to construct the substring.
+//Notice at the end of the array, the substring needs to include index(0 - substring_size).
+//We will use mod to achieve this.
+//
+//Linked list is different from array.First, it doesn't have the indexing, so we need 
+//to keep track of the number of the Nodes.Besides, we want our linked list become a
+//circular linked list in order to keep tracker of the substring.Array doesn't have 
+//circular array, but for linked list, we can construct a circular linked list when we
+//are testing.
