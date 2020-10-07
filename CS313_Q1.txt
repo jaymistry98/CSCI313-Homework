@@ -1,0 +1,319 @@
+
+ListandVector.h
+#pragma once
+
+#include <vector>
+#include <string>
+#include <list>
+#include <time.h>
+#include <iostream>
+#include "Timing.cpp"
+#include "MoveIt.h"
+using namespace std;
+//1. Test whether a vector or a list is faster by timing them via :
+//a.Filling them with random numbers
+//b.Filling them with random strings(use ascii)
+//c.Doing the above with move semantics when filling with random strings
+
+// The build functions will fill vector and list random int and string. 
+// when filling strings, we use generate_string() to generate lowercase string with random size.
+// In Q1_main(), we time the speed of buildVector() and buildList() using "Timing.cpp"
+
+string generate_string() {
+	// The string size will be random, and contains only lowercase letters.
+	srand(time(0));
+	int size = rand() % 11;
+	string ans = "";
+	for (int i = 0; i < size; i++) {
+		ans += 'a' + rand() % 26;
+	}
+	
+	return ans;
+}
+
+
+
+void BuildVector(int size, vector <int> v) {
+	srand(time(0));
+	for (int i = 0; i < size; i++) {
+		v.push_back(rand() % size);
+	}
+}
+
+
+void BuildVector(int size, vector <string> v) {
+	for (int i = 0; i < size; i++) {
+		v.push_back(generate_string());
+	}
+}
+
+
+void BuildList(int size, list <int> l) {
+	srand(time(0));
+	for (int i = 0; i < size; i++) {
+		l.push_back(rand() % size);
+		
+	}
+}
+
+
+void BuildList(int size, list <string> l) {
+	for (int i = 0; i < size; i++) {
+		l.push_back(generate_string());
+	}
+}
+
+
+************************************************************************************************************
+"Timing.h"
+
+#pragma once
+
+#include <vector>
+#include <list>
+#include "ListAndVector.h"
+#include <chrono>
+
+using std::chrono::system_clock;
+using std::chrono::steady_clock;
+using std::chrono::duration_cast;
+using std::chrono::seconds;
+using std::chrono::milliseconds;
+using std::vector;
+using std::list;
+
+
+template <typename Func>
+class Timing {
+public:
+	long long TimeFunc(Func f);
+};
+
+template<typename Func>
+inline long long Timing<Func>::TimeFunc(Func f)
+{
+	auto begin = steady_clock::now();
+	f();
+	auto end = steady_clock::now();
+
+	return duration_cast<milliseconds>(end - begin).count();
+}
+
+****************************************************************************************
+"MoveIt.h"
+
+#pragma once
+#include <iostream>
+#include <string>
+#include <utility>
+#include "ListandVector.h"
+
+using namespace std;
+
+class MoveIt {
+private:
+	string sentence;
+	string* ptr;
+	int size;
+
+public:
+	MoveIt(string sentence = nullptr, int size = 1) : sentence(sentence), size(size) {
+		//cout << "Running the constructor\n";
+		ptr = new string[size];
+		for (int i = 0; i < size; i++)
+		{
+			ptr[i] = generate_string();
+		}
+	}
+
+	//destructor
+	~MoveIt() {
+		//cout << "Running the destructor\n";
+		delete[] ptr;
+	}
+
+	//copy constructor
+	MoveIt(const MoveIt& obj) noexcept {
+		//cout << "In copy constructor\n";
+
+		
+		this->sentence = obj.sentence;
+		this->size = obj.size;
+		ptr = new string[size];
+
+		for (int i = 0; i < size; i++)
+		{
+			ptr[i] = obj.ptr[i];
+		}
+	}
+
+	//assignment operator
+	MoveIt& operator=(const MoveIt& obj) noexcept {
+		//cout << "In operator equals\n";
+
+		if (this != &obj) {
+			if (size > 0) {
+				delete[] ptr;
+			}
+
+			
+			this->sentence = obj.sentence;
+			this->size = obj.size;
+			ptr = new string[this->size];
+			for (int i = 0; i < size; i++)
+			{
+				this->ptr[i] = obj.ptr[i];
+			}
+		}
+		return *this;
+	}
+
+	//move assignment operator
+	MoveIt& operator=(MoveIt&& obj) noexcept {
+		//cout << "In move assignment operator\n";
+
+		if (this != &obj) {
+			delete[] ptr;
+
+			
+			this->sentence = obj.sentence;
+			this->size = obj.size;
+			ptr = obj.ptr;
+
+			obj.ptr = nullptr;
+		}
+		return *this;
+	}
+
+	//move constructor
+	MoveIt(MoveIt&& obj) noexcept {
+		//cout << "In move constructor\n";
+
+		//*this = move(obj);
+		
+		this->sentence = obj.sentence;
+		this->size = obj.size;
+		ptr = obj.ptr;
+
+		obj.ptr = nullptr;
+	}
+	void testMe() {
+		
+		cout << "The sentence is: " << sentence << endl;
+		cout << "My array is:\n";
+		for (int i = 0; i < size; i++)
+		{
+			cout << ptr[i] << " ";
+		}
+		cout << endl;
+	}
+
+	string generate_string() {
+		// The string size will be random, and contains only lowercase letters.
+		srand(time(0));
+		int size = rand() % 11;
+		string ans = "";
+		for (int i = 0; i < size; i++) {
+			ans += 'a' + rand() % 26;
+		}
+
+		return ans;
+	}
+};
+
+
+***************************************************************************************
+main
+
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <list>
+#include <utility>
+#include <time.h>
+#include <cmath>
+#include <unordered_set>
+
+using std:: cout;
+using std::vector;
+using std::list;
+using namespace std;
+
+#include "Timing.h"
+//#include "Timing.cpp"
+#include "ListandVector.h"
+#include "MoveIt.h"
+
+
+void Q1_main() {
+	int const size = 10'000;
+
+	vector<int> v;
+	v.push_back(0);
+
+	list<int> l;
+	l.push_back(0);
+
+	// compare the speed of buildVector and buildList.
+	auto vectormilliseconds = TimeFunc([&]() {BuildVector(size, v); });
+	auto listmilliseconds = TimeFunc([&]() {BuildList(size, l); });
+
+	if (vectormilliseconds < listmilliseconds) {
+		cout << "vectormilliseconds is " << vectormilliseconds << endl;
+		cout << "listmilliseconds is " << listmilliseconds << endl;
+		cout << "BuildVector is faster" << endl;
+	}
+	else if (vectormilliseconds > listmilliseconds) {
+		cout << "vectormilliseconds is " << vectormilliseconds << endl;
+		cout << "listmilliseconds is " << listmilliseconds << endl;
+		cout << "BuildList is faster" << endl;
+	}
+	else {
+		cout << "same speed" << endl;
+	}
+
+	// compare the speed of buildVector and buildList.
+	vector<string> v_string;
+	v_string.push_back("start");
+
+	list <string> l_string;
+	l_string.push_back("start");
+	auto vectormilliseconds_string = TimeFunc([&]() {BuildVector(size, v_string); });
+	auto listmilliseconds_string = TimeFunc([&]() {BuildList(size, l_string); });
+
+
+	if (vectormilliseconds_string < listmilliseconds_string) {
+		cout << "vectormilliseconds_string is " << vectormilliseconds_string << endl;
+		cout << "listmilliseconds_string is " << listmilliseconds_string << endl;
+		cout << "BuildVector is faster" << endl;
+	}
+	else if (vectormilliseconds_string > listmilliseconds_string) {
+		cout << "vectormilliseconds_string is " << vectormilliseconds_string << endl;
+		cout << "listmilliseconds_string is " << listmilliseconds_string << endl;
+		cout << "BuildList is faster" << endl;
+	}
+	else {
+		cout << "same speed" << endl;
+
+	}
+
+
+	// using move semantics
+	MoveIt a("Move", 20);
+	a.testMe();
+	cout << endl;
+
+	MoveIt b(move(a));
+	b.testMe();
+	cout << endl;
+
+	MoveIt c(move(MoveIt("Move101", 40)));
+	c.testMe();
+}
+
+int main()
+{
+	Q1_main();
+	
+}
