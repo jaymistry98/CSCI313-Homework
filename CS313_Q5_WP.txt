@@ -1,0 +1,12 @@
+Q5) Create a multi-level sort. For instance, for all selections of n > 10 you do sort X and
+within sort X, when you have a situation with n < 10 you do sort Y. Be creative. Time
+your sort against two “reasonably comparable” sorts (you may use libraries for the
+“reasonably comparable sorts”).
+
+- MultiSort :- A Function which takes an array and splits into two parts i.e one part has elements > 10 and one has elements < 10. Then it stores the two parts into  two different temp arrays. These temp arrays used two sort functions to sort the elements. After sorting, the temp arrays are merged into one array and printed.
+
+- SelectionSort :- A function used to sort the elements of the array with total elements <= 10.
+
+- InsertionSort :- A function used to sort the elements of the array with total elements > 10.
+
+- Main :- Creates an array of size 22. Then the array is filled with random numbers between 1-99. We pass this array through the Multisort function which prints the sorted array.

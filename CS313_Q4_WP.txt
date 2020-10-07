@@ -1,0 +1,27 @@
+Q4. 
+Compare the times it takes to sort a random array vs a linked list with a bubble sort.
+Bubble sort was a new sort for me. I have heard of it but never coded it myself. I seemed simple
+enough but as the values got bigger the sort toke a long time to complete.
+The code was straight forward for an array. We go through the array checking to see if the
+position we are at is greater than the position+1. If so, we swap those values. We continue this
+down the line till we reach then end with the biggest value in the array.
+
+I used a while loop with a bool variable, called sorted, that checks if it is false. If so, the loop
+continues. The next line changes sorted to true. In the loop, there is an if statement that checks
+the position is greater than position+1. If that if a statement is used the sorted is changed to
+false and the while loop will continue. Once the for loop can go through the array and never
+trigger the if statement then sorted ends as true and the array is sorted.
+
+The linked list required me to create my class. I kept it bare since I did not need everything it
+had to offer. The bubble sort is the same, but it required a few tricks to swap out the node. I
+used a trailing pointer to stay one node back of the current pointer. A while loop like the array
+bubble sort kept going till bool sorted returned true. If a value less than current is found, then a
+temp pointer is used to hold the next object. The trailer.next points to temp, current.next
+points to temp.next. This moves the position+1 object to the position. From there, current will
+equal temp, trailer equal current, and current equal current.next. The position is now in front of
+position+1 and the links are back in order. Sorted becomes false and the loop runs again. If
+position is less than position+1 then the pointers just move down the list. Doing the swap this
+way keeps our object data consistent and isn’t changed in the process.
+
+Lastly the main just create the array with random objects and times the two searches. It prints
+the results to the console so you can see the speed of one to the other.
