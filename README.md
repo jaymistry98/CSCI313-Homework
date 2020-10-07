@@ -1,4 +1,4 @@
-# CSCI313-Homework
+# CSCI313-Homework Q1
 
 1. Test whether a vector or a list is faster by timing them via:
 a. Filling them with random numbers
